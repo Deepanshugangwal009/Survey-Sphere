@@ -3,13 +3,13 @@ const { Sequelize } = require('sequelize');
 const config = require('./config');
 
 const environment = process.env.NODE_ENV || 'development';
-const settings = config[environment];
+const databaseSettings = config[environment];
 
-const sequelize = new Sequelize(settings.database, settings.username, settings.password, {
-  host: settings.host,
-  port: settings.port,
-  dialect: settings.dialect,
-  logging: settings.logging,
+const sequelize = new Sequelize(databaseSettings.database, databaseSettings.username, databaseSettings.password, {
+  host: databaseSettings.host,
+  port: databaseSettings.port,
+  dialect: databaseSettings.dialect,
+  logging: databaseSettings.logging,
   pool: {
     max: 5,
     min: 0,
@@ -25,13 +25,13 @@ function describeConnectionError(error) {
     return 'Access denied. Check DB_USER and DB_PASSWORD in the .env file.';
   }
   if (code === 'ER_BAD_DB_ERROR') {
-    return `The database "${settings.database}" does not exist. Create it before starting the app.`;
+    return `The database "${databaseSettings.database}" does not exist. Create it before starting the app.`;
   }
   if (code === 'ECONNREFUSED') {
-    return `No MySQL server is listening on ${settings.host}:${settings.port}. Start MySQL and try again.`;
+    return `No MySQL server is listening on ${databaseSettings.host}:${databaseSettings.port}. Start MySQL and try again.`;
   }
   if (code === 'ENOTFOUND') {
-    return `The host "${settings.host}" could not be found. Check DB_HOST in the .env file.`;
+    return `The host "${databaseSettings.host}" could not be found. Check DB_HOST in the .env file.`;
   }
 
   return error.message;
@@ -40,7 +40,7 @@ function describeConnectionError(error) {
 async function connectDatabase() {
   try {
     await sequelize.authenticate();
-    console.log(`Connected to the MySQL database "${settings.database}"`);
+    console.log(`Connected to the MySQL database "${databaseSettings.database}"`);
   } catch (error) {
     console.error('Could not connect to the database.');
     console.error(describeConnectionError(error));
@@ -48,4 +48,4 @@ async function connectDatabase() {
   }
 }
 
-module.exports = { sequelize, connectDatabase };
+module.exports = { sequelize, connectDatabase, databaseSettings };

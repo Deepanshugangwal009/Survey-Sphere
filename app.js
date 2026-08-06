@@ -1,15 +1,60 @@
 require('dotenv').config();
 
+const path = require('path');
 const express = require('express');
+const expressLayouts = require('express-ejs-layouts');
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
+const cookieParser = require('cookie-parser');
+const flash = require('connect-flash');
 
-const { connectDatabase } = require('./config/database');
+const { connectDatabase, databaseSettings } = require('./config/database');
+const homeRoutes = require('./routes/homeRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-  res.send('Online Survey System is running');
+const sessionStore = new MySQLStore({
+  host: databaseSettings.host,
+  port: databaseSettings.port,
+  user: databaseSettings.username,
+  password: databaseSettings.password,
+  database: databaseSettings.database
 });
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.set('layout', 'layouts/main');
+app.use(expressLayouts);
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24
+    }
+  })
+);
+
+app.use(flash());
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  next();
+});
+
+app.use('/', homeRoutes);
+app.use('/', authRoutes);
 
 async function startServer() {
   try {

@@ -1,0 +1,21 @@
+<div class="card form-card">
+  <div class="card-body">
+    <h4 class="card-title text-center mb-4">Login</h4>
+
+    <form method="post" action="/login">
+      <div class="mb-3">
+        <label class="form-label" for="email">Email</label>
+        <input class="form-control" type="email" id="email" name="email" value="<%= values.email || '' %>" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="password">Password</label>
+        <input class="form-control" type="password" id="password" name="password" required>
+      </div>
+      <button class="btn btn-primary w-100" type="submit">Login</button>
+    </form>
+
+    <p class="text-center mt-3 mb-0">
+      New here? <a href="/register">Create an account</a>
+    </p>
+  </div>
+</div>

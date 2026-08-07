@@ -14,11 +14,16 @@ fs.readdirSync(__dirname)
     db[model.name] = model;
   });
 
-Object.keys(db).forEach((modelName) => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
+const { User, Survey, Question, QuestionOption } = db;
+
+User.hasMany(Survey, { foreignKey: 'userId' });
+Survey.belongsTo(User, { as: 'owner', foreignKey: 'userId' });
+
+Survey.hasMany(Question, { as: 'questions', foreignKey: 'surveyId', onDelete: 'CASCADE' });
+Question.belongsTo(Survey, { foreignKey: 'surveyId' });
+
+Question.hasMany(QuestionOption, { as: 'options', foreignKey: 'questionId', onDelete: 'CASCADE' });
+QuestionOption.belongsTo(Question, { foreignKey: 'questionId' });
 
 db.sequelize = sequelize;
 

@@ -1,17 +1,15 @@
-<% if (locals.success && success.length > 0) { %>
-  <% success.forEach((message) => { %>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <i class="fa-solid fa-circle-check me-1"></i><%= message %>
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  <% }); %>
-<% } %>
+<%
+  const flashGroups = [
+    { messages: locals.success, style: 'success', icon: 'fa-circle-check' },
+    { messages: locals.error, style: 'danger', icon: 'fa-circle-exclamation' }
+  ];
+%>
 
-<% if (locals.error && error.length > 0) { %>
-  <% error.forEach((message) => { %>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      <i class="fa-solid fa-circle-exclamation me-1"></i><%= message %>
+<% flashGroups.forEach((group) => { %>
+  <% (group.messages || []).forEach((message) => { %>
+    <div class="alert alert-<%= group.style %> alert-dismissible fade show" role="alert">
+      <i class="fa-solid <%= group.icon %> me-1"></i><%= message %>
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
   <% }); %>
-<% } %>
+<% }); %>

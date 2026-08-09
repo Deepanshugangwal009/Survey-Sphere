@@ -1,0 +1,8 @@
+<div class="card form-card">
+  <div class="card-body">
+    <h4 class="card-title mb-4">Edit Survey</h4>
+    <form method="post" action="/surveys/<%= survey.id %>?_method=PUT">
+      <%- include('_form', { values, submitLabel: 'Save Changes', cancelUrl: `/surveys/${survey.id}` }) %>
+    </form>
+  </div>
+</div>

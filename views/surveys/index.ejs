@@ -1,0 +1,48 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="mb-0">My Surveys</h3>
+  <a class="btn btn-primary" href="/surveys/new">
+    <i class="fa-solid fa-plus me-1"></i>New Survey
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <% if (surveys.length > 0) { %>
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% surveys.forEach((survey) => { %>
+            <tr>
+              <td><a href="/surveys/<%= survey.id %>"><%= survey.title %></a></td>
+              <td><%- include('../partials/statusBadge', { status: survey.status }) %></td>
+              <td><%= survey.createdAt.toLocaleDateString() %></td>
+              <td class="text-end">
+                <a class="btn btn-sm btn-outline-dark" href="/surveys/<%= survey.id %>">
+                  <i class="fa-solid fa-eye"></i>
+                </a>
+                <a class="btn btn-sm btn-outline-primary" href="/surveys/<%= survey.id %>/edit">
+                  <i class="fa-solid fa-pen"></i>
+                </a>
+                <form class="d-inline" method="post" action="/surveys/<%= survey.id %>?_method=DELETE"
+                      onsubmit="return confirm('Delete this survey and everything in it?');">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p class="mb-0 text-muted">You have not created any surveys yet.</p>
+    <% } %>
+  </div>
+</div>

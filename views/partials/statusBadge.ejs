@@ -1,0 +1,4 @@
+<%
+  const statusStyles = { draft: 'secondary', published: 'success', closed: 'dark' };
+%>
+<span class="badge bg-<%= statusStyles[status] %> text-uppercase"><%= status %></span>

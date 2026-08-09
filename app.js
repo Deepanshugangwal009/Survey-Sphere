@@ -7,11 +7,14 @@ const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 const cookieParser = require('cookie-parser');
 const flash = require('connect-flash');
+const methodOverride = require('method-override');
 
 const { connectDatabase, databaseSettings } = require('./config/database');
 const currentUser = require('./middleware/currentUser');
 const homeRoutes = require('./routes/homeRoutes');
 const authRoutes = require('./routes/authRoutes');
+const surveyRoutes = require('./routes/surveyRoutes');
+const questionRoutes = require('./routes/questionRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -32,6 +35,7 @@ app.use(expressLayouts);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(methodOverride('_method'));
 
 app.use(
   session({
@@ -58,6 +62,8 @@ app.use(currentUser);
 
 app.use('/', homeRoutes);
 app.use('/', authRoutes);
+app.use('/surveys', surveyRoutes);
+app.use('/', questionRoutes);
 
 async function startServer() {
   try {

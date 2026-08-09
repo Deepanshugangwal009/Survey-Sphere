@@ -1,0 +1,9 @@
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title mb-1">Edit Question</h4>
+    <p class="text-muted"><%= survey.title %></p>
+    <form method="post" action="/questions/<%= question.id %>?_method=PUT">
+      <%- include('_form', { values, survey, submitLabel: 'Save Changes' }) %>
+    </form>
+  </div>
+</div>

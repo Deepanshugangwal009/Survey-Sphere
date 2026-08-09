@@ -1,0 +1,8 @@
+<div class="card form-card">
+  <div class="card-body">
+    <h4 class="card-title mb-4">New Survey</h4>
+    <form method="post" action="/surveys">
+      <%- include('_form', { values, submitLabel: 'Create Survey', cancelUrl: '/surveys' }) %>
+    </form>
+  </div>
+</div>

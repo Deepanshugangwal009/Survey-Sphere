@@ -1,0 +1,64 @@
+<%
+  const questionTypes = ['single_choice', 'multiple_choice', 'short_text', 'rating'];
+  const optionTexts = values.options && values.options.length > 0 ? values.options : ['', ''];
+  const optionIds = values.optionIds || [];
+%>
+
+<div class="mb-3">
+  <label class="form-label" for="text">Question</label>
+  <textarea class="form-control" id="text" name="text" rows="2" required><%= values.text || '' %></textarea>
+</div>
+
+<div class="row">
+  <div class="col-md-6 mb-3">
+    <label class="form-label" for="type">Type</label>
+    <select class="form-select text-capitalize" id="type" name="type" required>
+      <% questionTypes.forEach((type) => { %>
+        <option value="<%= type %>" <%= values.type === type ? 'selected' : '' %>>
+          <%= type.replace('_', ' ') %>
+        </option>
+      <% }); %>
+    </select>
+  </div>
+  <div class="col-md-6 mb-3 d-flex align-items-end">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="isRequired" name="isRequired"
+             <%= values.isRequired ? 'checked' : '' %>>
+      <label class="form-check-label" for="isRequired">Answer is required</label>
+    </div>
+  </div>
+</div>
+
+<div class="mb-3" id="optionsSection">
+  <label class="form-label">Options</label>
+  <div id="optionList">
+    <% optionTexts.forEach((optionText, index) => { %>
+      <div class="input-group mb-2 option-row">
+        <input type="hidden" name="optionIds" value="<%= optionIds[index] || '' %>">
+        <input class="form-control" type="text" name="options" value="<%= optionText %>" placeholder="Option text">
+        <button class="btn btn-outline-danger remove-option" type="button">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    <% }); %>
+  </div>
+  <button class="btn btn-sm btn-outline-secondary" type="button" id="addOption">
+    <i class="fa-solid fa-plus me-1"></i>Add Option
+  </button>
+</div>
+
+<div class="row" id="ratingSection">
+  <div class="col-md-6 mb-3">
+    <label class="form-label" for="minValue">Minimum value</label>
+    <input class="form-control" type="number" id="minValue" name="minValue" value="<%= values.minValue || 1 %>">
+  </div>
+  <div class="col-md-6 mb-3">
+    <label class="form-label" for="maxValue">Maximum value</label>
+    <input class="form-control" type="number" id="maxValue" name="maxValue" value="<%= values.maxValue || 5 %>">
+  </div>
+</div>
+
+<button class="btn btn-primary" type="submit"><%= submitLabel %></button>
+<a class="btn btn-outline-secondary" href="/surveys/<%= survey.id %>">Cancel</a>
+
+<script src="/js/questionForm.js"></script>

@@ -1,0 +1,9 @@
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title mb-1">Add Question</h4>
+    <p class="text-muted"><%= survey.title %></p>
+    <form method="post" action="/surveys/<%= survey.id %>/questions">
+      <%- include('_form', { values, survey, submitLabel: 'Add Question' }) %>
+    </form>
+  </div>
+</div>

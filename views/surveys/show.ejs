@@ -1,0 +1,77 @@
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h3 class="mb-2">
+      <%= survey.title %>
+      <%- include('../partials/statusBadge', { status: survey.status }) %>
+    </h3>
+    <% if (survey.description) { %>
+      <p class="text-muted mb-0"><%= survey.description %></p>
+    <% } %>
+  </div>
+  <div class="text-nowrap">
+    <a class="btn btn-outline-secondary" href="/surveys">Back</a>
+    <a class="btn btn-outline-primary" href="/surveys/<%= survey.id %>/edit">
+      <i class="fa-solid fa-pen me-1"></i>Edit
+    </a>
+    <form class="d-inline" method="post" action="/surveys/<%= survey.id %>?_method=DELETE"
+          onsubmit="return confirm('Delete this survey and everything in it?');">
+      <button class="btn btn-outline-danger" type="submit">
+        <i class="fa-solid fa-trash me-1"></i>Delete
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0">Questions</h5>
+      <a class="btn btn-primary btn-sm" href="/surveys/<%= survey.id %>/questions/new">
+        <i class="fa-solid fa-plus me-1"></i>Add Question
+      </a>
+    </div>
+
+    <% if (survey.questions.length > 0) { %>
+      <ol class="list-group list-group-numbered">
+        <% survey.questions.forEach((question) => { %>
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-semibold"><%= question.text %></div>
+              <span class="badge bg-light text-dark text-capitalize">
+                <%= question.type.replace('_', ' ') %>
+              </span>
+              <% if (question.isRequired) { %>
+                <span class="badge bg-warning text-dark">Required</span>
+              <% } %>
+              <% if (question.type === 'rating') { %>
+                <span class="badge bg-light text-dark">
+                  <%= question.minValue %> to <%= question.maxValue %>
+                </span>
+              <% } %>
+              <% if (question.options.length > 0) { %>
+                <ul class="mt-2 mb-0 small text-muted">
+                  <% question.options.forEach((option) => { %>
+                    <li><%= option.text %></li>
+                  <% }); %>
+                </ul>
+              <% } %>
+            </div>
+            <div class="text-nowrap">
+              <a class="btn btn-sm btn-outline-primary" href="/questions/<%= question.id %>/edit">
+                <i class="fa-solid fa-pen"></i>
+              </a>
+              <form class="d-inline" method="post" action="/questions/<%= question.id %>?_method=DELETE"
+                    onsubmit="return confirm('Remove this question?');">
+                <button class="btn btn-sm btn-outline-danger" type="submit">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </form>
+            </div>
+          </li>
+        <% }); %>
+      </ol>
+    <% } else { %>
+      <p class="mb-0 text-muted">This survey has no questions yet.</p>
+    <% } %>
+  </div>
+</div>

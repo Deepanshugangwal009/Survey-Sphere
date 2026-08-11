@@ -1,3 +1,5 @@
+<% const isDraft = survey.status === 'draft'; %>
+
 <div class="d-flex justify-content-between align-items-start mb-4">
   <div>
     <h3 class="mb-2">
@@ -22,13 +24,59 @@
   </div>
 </div>
 
+<div class="card mb-4">
+  <div class="card-body">
+    <h5 class="card-title">Publishing</h5>
+
+    <% if (isDraft) { %>
+      <p class="text-muted">
+        This survey is a draft. Publish it to get a public link that anyone can answer.
+        Questions cannot be changed after publishing.
+      </p>
+      <form method="post" action="/surveys/<%= survey.id %>/publish">
+        <button class="btn btn-success" type="submit">
+          <i class="fa-solid fa-paper-plane me-1"></i>Publish Survey
+        </button>
+      </form>
+    <% } else { %>
+      <div class="mb-3">
+        <label class="form-label" for="shareLink">Public link</label>
+        <div class="input-group">
+          <input class="form-control" type="text" id="shareLink" value="<%= shareUrl %>" readonly>
+          <button class="btn btn-outline-secondary" type="button" id="copyShareLink">Copy</button>
+        </div>
+      </div>
+
+      <% if (survey.status === 'published') { %>
+        <form class="d-inline" method="post" action="/surveys/<%= survey.id %>/close">
+          <button class="btn btn-outline-dark" type="submit">
+            <i class="fa-solid fa-lock me-1"></i>Close Survey
+          </button>
+        </form>
+        <a class="btn btn-outline-primary" href="<%= shareUrl %>" target="_blank">
+          <i class="fa-solid fa-arrow-up-right-from-square me-1"></i>Open Public Page
+        </a>
+      <% } else { %>
+        <p class="text-muted">This survey is closed and no longer accepting responses.</p>
+        <form class="d-inline" method="post" action="/surveys/<%= survey.id %>/reopen">
+          <button class="btn btn-outline-success" type="submit">
+            <i class="fa-solid fa-lock-open me-1"></i>Reopen Survey
+          </button>
+        </form>
+      <% } %>
+    <% } %>
+  </div>
+</div>
+
 <div class="card">
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h5 class="mb-0">Questions</h5>
-      <a class="btn btn-primary btn-sm" href="/surveys/<%= survey.id %>/questions/new">
-        <i class="fa-solid fa-plus me-1"></i>Add Question
-      </a>
+      <% if (isDraft) { %>
+        <a class="btn btn-primary btn-sm" href="/surveys/<%= survey.id %>/questions/new">
+          <i class="fa-solid fa-plus me-1"></i>Add Question
+        </a>
+      <% } %>
     </div>
 
     <% if (survey.questions.length > 0) { %>
@@ -56,17 +104,19 @@
                 </ul>
               <% } %>
             </div>
-            <div class="text-nowrap">
-              <a class="btn btn-sm btn-outline-primary" href="/questions/<%= question.id %>/edit">
-                <i class="fa-solid fa-pen"></i>
-              </a>
-              <form class="d-inline" method="post" action="/questions/<%= question.id %>?_method=DELETE"
-                    onsubmit="return confirm('Remove this question?');">
-                <button class="btn btn-sm btn-outline-danger" type="submit">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </form>
-            </div>
+            <% if (isDraft) { %>
+              <div class="text-nowrap">
+                <a class="btn btn-sm btn-outline-primary" href="/questions/<%= question.id %>/edit">
+                  <i class="fa-solid fa-pen"></i>
+                </a>
+                <form class="d-inline" method="post" action="/questions/<%= question.id %>?_method=DELETE"
+                      onsubmit="return confirm('Remove this question?');">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </form>
+              </div>
+            <% } %>
           </li>
         <% }); %>
       </ol>
@@ -75,3 +125,5 @@
     <% } %>
   </div>
 </div>
+
+<script src="/js/share.js"></script>

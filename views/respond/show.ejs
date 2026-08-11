@@ -1,0 +1,75 @@
+<%
+  function isChosen(key, value) {
+    const submitted = answers[key];
+    if (submitted === undefined) {
+      return false;
+    }
+    return [].concat(submitted).map(String).includes(String(value));
+  }
+%>
+
+<div class="card form-card">
+  <div class="card-body">
+    <h4 class="card-title"><%= survey.title %></h4>
+    <% if (survey.description) { %>
+      <p class="text-muted"><%= survey.description %></p>
+    <% } %>
+
+    <% if (survey.status !== 'published') { %>
+      <div class="alert alert-secondary mb-0">
+        <i class="fa-solid fa-lock me-1"></i>This survey is closed and is not accepting responses.
+      </div>
+    <% } else { %>
+      <form method="post" action="/s/<%= survey.shareSlug %>">
+        <% survey.questions.forEach((question, index) => { %>
+          <% const key = `q${question.id}`; %>
+          <div class="mb-4">
+            <label class="form-label fw-semibold">
+              <%= index + 1 %>. <%= question.text %>
+              <% if (question.isRequired) { %>
+                <span class="text-danger">*</span>
+              <% } %>
+            </label>
+
+            <% if (question.type === 'single_choice' || question.type === 'multiple_choice') { %>
+              <% const isSingle = question.type === 'single_choice'; %>
+              <% question.options.forEach((option) => { %>
+                <div class="form-check">
+                  <input class="form-check-input" type="<%= isSingle ? 'radio' : 'checkbox' %>"
+                         id="option<%= option.id %>"
+                         name="answers[<%= key %>]<%= isSingle ? '' : '[]' %>"
+                         value="<%= option.id %>"
+                         <%= isChosen(key, option.id) ? 'checked' : '' %>
+                         <%= question.isRequired && isSingle ? 'required' : '' %>>
+                  <label class="form-check-label" for="option<%= option.id %>"><%= option.text %></label>
+                </div>
+              <% }); %>
+
+            <% } else if (question.type === 'rating') { %>
+              <div class="d-flex flex-wrap gap-3">
+                <% for (let value = question.minValue; value <= question.maxValue; value += 1) { %>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio"
+                           id="rating<%= question.id %>-<%= value %>"
+                           name="answers[<%= key %>]"
+                           value="<%= value %>"
+                           <%= isChosen(key, value) ? 'checked' : '' %>
+                           <%= question.isRequired ? 'required' : '' %>>
+                    <label class="form-check-label" for="rating<%= question.id %>-<%= value %>"><%= value %></label>
+                  </div>
+                <% } %>
+              </div>
+
+            <% } else { %>
+              <textarea class="form-control" rows="3"
+                        name="answers[<%= key %>]"
+                        <%= question.isRequired ? 'required' : '' %>><%= answers[key] || '' %></textarea>
+            <% } %>
+          </div>
+        <% }); %>
+
+        <button class="btn btn-primary w-100" type="submit">Submit Response</button>
+      </form>
+    <% } %>
+  </div>
+</div>

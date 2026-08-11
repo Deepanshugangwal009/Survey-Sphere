@@ -18,6 +18,15 @@ exports.loadOwnedSurvey = async (req, res, next) => {
   }
 };
 
+exports.requireDraftSurvey = (req, res, next) => {
+  if (req.survey.status !== 'draft') {
+    req.flash('error', 'Questions can only be changed while the survey is a draft.');
+    return res.redirect(`/surveys/${req.survey.id}`);
+  }
+
+  next();
+};
+
 exports.loadOwnedQuestion = async (req, res, next) => {
   try {
     const question = await Question.findOne({

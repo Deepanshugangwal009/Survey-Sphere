@@ -14,7 +14,7 @@ fs.readdirSync(__dirname)
     db[model.name] = model;
   });
 
-const { User, Survey, Question, QuestionOption } = db;
+const { User, Survey, Question, QuestionOption, Response, Answer } = db;
 
 User.hasMany(Survey, { foreignKey: 'userId' });
 Survey.belongsTo(User, { as: 'owner', foreignKey: 'userId' });
@@ -24,6 +24,15 @@ Question.belongsTo(Survey, { foreignKey: 'surveyId' });
 
 Question.hasMany(QuestionOption, { as: 'options', foreignKey: 'questionId', onDelete: 'CASCADE' });
 QuestionOption.belongsTo(Question, { foreignKey: 'questionId' });
+
+Survey.hasMany(Response, { as: 'responses', foreignKey: 'surveyId', onDelete: 'CASCADE' });
+Response.belongsTo(Survey, { foreignKey: 'surveyId' });
+
+Response.hasMany(Answer, { as: 'answers', foreignKey: 'responseId', onDelete: 'CASCADE' });
+Answer.belongsTo(Response, { foreignKey: 'responseId' });
+
+Answer.belongsTo(Question, { foreignKey: 'questionId' });
+Answer.belongsTo(QuestionOption, { foreignKey: 'optionId' });
 
 db.sequelize = sequelize;
 

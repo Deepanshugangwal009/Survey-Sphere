@@ -15,6 +15,7 @@ const homeRoutes = require('./routes/homeRoutes');
 const authRoutes = require('./routes/authRoutes');
 const surveyRoutes = require('./routes/surveyRoutes');
 const questionRoutes = require('./routes/questionRoutes');
+const responseRoutes = require('./routes/responseRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -64,6 +65,7 @@ app.use('/', homeRoutes);
 app.use('/', authRoutes);
 app.use('/surveys', surveyRoutes);
 app.use('/', questionRoutes);
+app.use('/s', responseRoutes);
 
 async function startServer() {
   try {

@@ -11,6 +11,7 @@ const methodOverride = require('method-override');
 
 const { connectDatabase, databaseSettings } = require('./config/database');
 const currentUser = require('./middleware/currentUser');
+const { notFound, errorHandler } = require('./middleware/errorHandler');
 const homeRoutes = require('./routes/homeRoutes');
 const authRoutes = require('./routes/authRoutes');
 const surveyRoutes = require('./routes/surveyRoutes');
@@ -66,6 +67,9 @@ app.use('/', authRoutes);
 app.use('/surveys', surveyRoutes);
 app.use('/', questionRoutes);
 app.use('/s', responseRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 async function startServer() {
   try {

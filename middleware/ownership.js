@@ -1,4 +1,5 @@
 const { Survey, Question } = require('../models');
+const AppError = require('../utils/AppError');
 
 exports.loadOwnedSurvey = async (req, res, next) => {
   try {
@@ -7,8 +8,7 @@ exports.loadOwnedSurvey = async (req, res, next) => {
     });
 
     if (!survey) {
-      req.flash('error', 'That survey was not found.');
-      return res.redirect('/surveys');
+      return next(new AppError('That survey does not exist or does not belong to you.', 404));
     }
 
     req.survey = survey;
@@ -41,8 +41,7 @@ exports.loadOwnedQuestion = async (req, res, next) => {
     });
 
     if (!question) {
-      req.flash('error', 'That question was not found.');
-      return res.redirect('/surveys');
+      return next(new AppError('That question does not exist or does not belong to you.', 404));
     }
 
     req.question = question;

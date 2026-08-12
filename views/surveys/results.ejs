@@ -1,0 +1,112 @@
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h3 class="mb-2">
+      <%= survey.title %>
+      <%- include('../partials/statusBadge', { status: survey.status }) %>
+    </h3>
+    <p class="text-muted mb-0">Results and response summary</p>
+  </div>
+  <div class="text-nowrap">
+    <a class="btn btn-outline-secondary" href="/surveys">Dashboard</a>
+    <a class="btn btn-outline-primary" href="/surveys/<%= survey.id %>">Survey</a>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body d-flex justify-content-between align-items-center">
+    <div>
+      <h6 class="text-muted mb-1">Total Responses</h6>
+      <h2 class="mb-0"><%= results.totalResponses %></h2>
+    </div>
+    <i class="fa-solid fa-chart-simple fa-2x text-primary"></i>
+  </div>
+</div>
+
+<% if (results.totalResponses === 0) { %>
+  <div class="alert alert-secondary">
+    <i class="fa-solid fa-circle-info me-1"></i>
+    No responses have been collected yet. Share the public link to start gathering answers.
+  </div>
+<% } %>
+
+<% results.questions.forEach((result, index) => { %>
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title"><%= index + 1 %>. <%= result.question.text %></h5>
+      <p class="text-muted">
+        <span class="badge bg-light text-dark text-capitalize">
+          <%= result.question.type.replace('_', ' ') %>
+        </span>
+        <%= result.answered %> answer<%= result.answered === 1 ? '' : 's' %>
+      </p>
+
+      <% if (result.question.type === 'short_text') { %>
+        <% if (result.textAnswers.length > 0) { %>
+          <ul class="list-group">
+            <% result.textAnswers.forEach((answer) => { %>
+              <li class="list-group-item">
+                <div><%= answer.textValue %></div>
+                <small class="text-muted"><%= new Date(answer.submittedAt).toLocaleString() %></small>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else { %>
+          <p class="text-muted mb-0">No answers for this question yet.</p>
+        <% } %>
+
+      <% } else if (result.question.type === 'rating') { %>
+        <div class="row mb-3">
+          <div class="col-4"><small class="text-muted d-block">Average</small><strong><%= result.average %></strong></div>
+          <div class="col-4"><small class="text-muted d-block">Lowest</small><strong><%= result.lowest %></strong></div>
+          <div class="col-4"><small class="text-muted d-block">Highest</small><strong><%= result.highest %></strong></div>
+        </div>
+        <% result.distribution.forEach((entry) => { %>
+          <div class="mb-2">
+            <div class="d-flex justify-content-between small">
+              <span>Rating <%= entry.value %></span>
+              <span><%= entry.total %> (<%= entry.percentage %>%)</span>
+            </div>
+            <div class="progress" role="progressbar">
+              <div class="progress-bar" style="width: <%= entry.percentage %>%"></div>
+            </div>
+          </div>
+        <% }); %>
+        <canvas id="chart-<%= result.question.id %>" height="120"></canvas>
+
+      <% } else { %>
+        <% result.options.forEach((option) => { %>
+          <div class="mb-2">
+            <div class="d-flex justify-content-between small">
+              <span><%= option.text %></span>
+              <span><%= option.total %> (<%= option.percentage %>%)</span>
+            </div>
+            <div class="progress" role="progressbar">
+              <div class="progress-bar" style="width: <%= option.percentage %>%"></div>
+            </div>
+          </div>
+        <% }); %>
+        <canvas id="chart-<%= result.question.id %>" height="120"></canvas>
+      <% } %>
+    </div>
+  </div>
+<% }); %>
+
+<% if (results.totalTextPages > 1) { %>
+  <nav>
+    <ul class="pagination">
+      <li class="page-item <%= page <= 1 ? 'disabled' : '' %>">
+        <a class="page-link" href="/surveys/<%= survey.id %>/results?page=<%= page - 1 %>">Previous</a>
+      </li>
+      <li class="page-item disabled">
+        <span class="page-link">Page <%= page %> of <%= results.totalTextPages %></span>
+      </li>
+      <li class="page-item <%= page >= results.totalTextPages ? 'disabled' : '' %>">
+        <a class="page-link" href="/surveys/<%= survey.id %>/results?page=<%= page + 1 %>">Next</a>
+      </li>
+    </ul>
+  </nav>
+<% } %>
+
+<script id="chartData" type="application/json"><%- chartDataJson %></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="/js/results.js"></script>

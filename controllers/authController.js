@@ -2,10 +2,7 @@ const { UniqueConstraintError } = require('sequelize');
 
 const { User } = require('../models');
 const { registerSchema, loginSchema } = require('../validators/authValidator');
-
-function getValidationErrors(error) {
-  return error.details.map((detail) => detail.message);
-}
+const { runValidation } = require('../middleware/validate');
 
 exports.showRegister = (req, res) => {
   res.render('auth/register', { title: 'Register', values: {} });
@@ -13,8 +10,7 @@ exports.showRegister = (req, res) => {
 
 exports.register = async (req, res, next) => {
   const values = { name: req.body.name, email: req.body.email };
-  const { error, value } = registerSchema.validate(req.body);
-  let errors = error ? getValidationErrors(error) : [];
+  let { value, errors } = runValidation(registerSchema, req.body);
 
   if (errors.length === 0) {
     try {
@@ -43,8 +39,7 @@ exports.showLogin = (req, res) => {
 
 exports.login = async (req, res, next) => {
   const values = { email: req.body.email };
-  const { error, value } = loginSchema.validate(req.body);
-  let errors = error ? getValidationErrors(error) : [];
+  let { value, errors } = runValidation(loginSchema, req.body);
 
   if (errors.length === 0) {
     try {

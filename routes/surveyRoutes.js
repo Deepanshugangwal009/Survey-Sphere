@@ -1,6 +1,7 @@
 const express = require('express');
 
 const surveyController = require('../controllers/surveyController');
+const resultsController = require('../controllers/resultsController');
 const { isAuthenticated } = require('../middleware/auth');
 const { loadOwnedSurvey } = require('../middleware/ownership');
 
@@ -13,6 +14,7 @@ router.get('/new', surveyController.showCreate);
 router.post('/', surveyController.create);
 router.get('/:id', loadOwnedSurvey, surveyController.show);
 router.get('/:id/edit', loadOwnedSurvey, surveyController.showEdit);
+router.get('/:id/results', loadOwnedSurvey, resultsController.show);
 router.put('/:id', loadOwnedSurvey, surveyController.update);
 router.post('/:id/publish', loadOwnedSurvey, surveyController.publish);
 router.post('/:id/close', loadOwnedSurvey, surveyController.close);

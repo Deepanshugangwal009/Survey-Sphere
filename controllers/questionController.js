@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 
 const { sequelize, Question, QuestionOption } = require('../models');
 const { questionSchema } = require('../validators/surveyValidator');
+const { runValidation } = require('../middleware/validate');
 
 function toArray(value) {
   if (value === undefined) {
@@ -19,10 +20,6 @@ function readQuestionForm(body) {
     minValue: body.minValue,
     maxValue: body.maxValue
   };
-}
-
-function getValidationErrors(error) {
-  return error.details.map((detail) => detail.message);
 }
 
 function buildOptionRows(question, optionTexts, transaction) {
@@ -46,13 +43,13 @@ exports.showCreate = (req, res) => {
 
 exports.create = async (req, res, next) => {
   const values = readQuestionForm(req.body);
-  const { error, value } = questionSchema.validate(values);
+  const { value, errors } = runValidation(questionSchema, values);
 
-  if (error) {
+  if (errors.length > 0) {
     return res.status(422).render('questions/new', {
       title: 'Add Question',
       survey: req.survey,
-      error: getValidationErrors(error),
+      error: errors,
       values
     });
   }
@@ -114,14 +111,14 @@ exports.showEdit = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   const submittedIds = toArray(req.body.optionIds);
   const values = readQuestionForm(req.body);
-  const { error, value } = questionSchema.validate(values);
+  const { value, errors } = runValidation(questionSchema, values);
 
-  if (error) {
+  if (errors.length > 0) {
     return res.status(422).render('questions/edit', {
       title: 'Edit Question',
       survey: req.survey,
       question: req.question,
-      error: getValidationErrors(error),
+      error: errors,
       values: { ...values, optionIds: submittedIds }
     });
   }

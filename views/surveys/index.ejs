@@ -13,6 +13,7 @@
           <tr>
             <th>Title</th>
             <th>Status</th>
+            <th>Responses</th>
             <th>Created</th>
             <th class="text-end">Actions</th>
           </tr>
@@ -22,10 +23,14 @@
             <tr>
               <td><a href="/surveys/<%= survey.id %>"><%= survey.title %></a></td>
               <td><%- include('../partials/statusBadge', { status: survey.status }) %></td>
+              <td><%= survey.get('responseCount') %></td>
               <td><%= survey.createdAt.toLocaleDateString() %></td>
               <td class="text-end">
                 <a class="btn btn-sm btn-outline-dark" href="/surveys/<%= survey.id %>">
                   <i class="fa-solid fa-eye"></i>
+                </a>
+                <a class="btn btn-sm btn-outline-success" href="/surveys/<%= survey.id %>/results">
+                  <i class="fa-solid fa-chart-simple"></i>
                 </a>
                 <a class="btn btn-sm btn-outline-primary" href="/surveys/<%= survey.id %>/edit">
                   <i class="fa-solid fa-pen"></i>

@@ -1,11 +1,8 @@
-const { Survey, Question } = require('../models');
+const { sequelize, Survey, Question } = require('../models');
 const { surveySchema } = require('../validators/surveyValidator');
 const { withOrderedQuestions } = require('../utils/queryHelpers');
+const { runValidation } = require('../middleware/validate');
 const { generateUniqueSlug } = require('../utils/slug');
-
-function getValidationErrors(error) {
-  return error.details.map((detail) => detail.message);
-}
 
 function buildShareUrl(req, survey) {
   if (!survey.shareSlug) {
@@ -18,6 +15,16 @@ exports.index = async (req, res, next) => {
   try {
     const surveys = await Survey.findAll({
       where: { userId: res.locals.currentUser.id },
+      attributes: {
+        include: [
+          [
+            sequelize.literal(
+              '(SELECT COUNT(*) FROM responses WHERE responses.survey_id = `Survey`.`id`)'
+            ),
+            'responseCount'
+          ]
+        ]
+      },
       order: [['created_at', 'DESC']]
     });
     res.render('surveys/index', { title: 'My Surveys', surveys });
@@ -32,12 +39,12 @@ exports.showCreate = (req, res) => {
 
 exports.create = async (req, res, next) => {
   const values = { title: req.body.title, description: req.body.description };
-  const { error, value } = surveySchema.validate(values);
+  const { value, errors } = runValidation(surveySchema, values);
 
-  if (error) {
+  if (errors.length > 0) {
     return res.status(422).render('surveys/new', {
       title: 'New Survey',
-      error: getValidationErrors(error),
+      error: errors,
       values
     });
   }
@@ -74,12 +81,12 @@ exports.showEdit = (req, res) => {
 
 exports.update = async (req, res, next) => {
   const values = { title: req.body.title, description: req.body.description };
-  const { error, value } = surveySchema.validate(values);
+  const { value, errors } = runValidation(surveySchema, values);
 
-  if (error) {
+  if (errors.length > 0) {
     return res.status(422).render('surveys/edit', {
       title: 'Edit Survey',
-      error: getValidationErrors(error),
+      error: errors,
       survey: req.survey,
       values
     });

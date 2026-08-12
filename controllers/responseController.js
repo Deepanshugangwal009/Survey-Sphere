@@ -1,6 +1,8 @@
 const { sequelize, Survey, Response, Answer } = require('../models');
 const { buildAnswersSchema, answerKey } = require('../validators/responseValidator');
 const { withOrderedQuestions } = require('../utils/queryHelpers');
+const { runValidation } = require('../middleware/validate');
+const AppError = require('../utils/AppError');
 
 function findSurveyBySlug(slug) {
   return Survey.findOne({ where: { shareSlug: slug }, ...withOrderedQuestions() });
@@ -37,8 +39,7 @@ exports.showSurvey = async (req, res, next) => {
     const survey = await findSurveyBySlug(req.params.slug);
 
     if (!survey) {
-      req.flash('error', 'That survey link is not valid.');
-      return res.redirect('/');
+      return next(new AppError('That survey link is not valid.', 404));
     }
 
     res.render('respond/show', { title: survey.title, survey, answers: {} });
@@ -52,8 +53,7 @@ exports.submit = async (req, res, next) => {
     const survey = await findSurveyBySlug(req.params.slug);
 
     if (!survey) {
-      req.flash('error', 'That survey link is not valid.');
-      return res.redirect('/');
+      return next(new AppError('That survey link is not valid.', 404));
     }
 
     const answers = req.body.answers || {};
@@ -62,14 +62,14 @@ exports.submit = async (req, res, next) => {
       return res.status(403).render('respond/show', { title: survey.title, survey, answers });
     }
 
-    const { error, value } = buildAnswersSchema(survey.questions).validate({ answers });
+    const { value, errors } = runValidation(buildAnswersSchema(survey.questions), { answers });
 
-    if (error) {
+    if (errors.length > 0) {
       return res.status(422).render('respond/show', {
         title: survey.title,
         survey,
         answers,
-        error: error.details.map((detail) => detail.message)
+        error: errors
       });
     }
 
@@ -101,8 +101,7 @@ exports.showThankYou = async (req, res, next) => {
     const survey = await Survey.findOne({ where: { shareSlug: req.params.slug } });
 
     if (!survey) {
-      req.flash('error', 'That survey link is not valid.');
-      return res.redirect('/');
+      return next(new AppError('That survey link is not valid.', 404));
     }
 
     res.render('respond/thankyou', { title: 'Thank You', survey });

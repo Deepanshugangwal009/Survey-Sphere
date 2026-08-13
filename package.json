@@ -1,21 +1,34 @@
 {
-  "name": "online-survey-system",
+  "name": "survey-sphere",
   "version": "1.0.0",
-  "description": "Online Survey System built with Node.js, Express, EJS and MySQL",
+  "description": "Survey Sphere - an online survey system built with Node.js, Express, EJS, Sequelize and MySQL",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
     "migrate": "sequelize-cli db:migrate",
     "migrate:undo": "sequelize-cli db:migrate:undo",
-    "migrate:undo:all": "sequelize-cli db:migrate:undo:all"
+    "migrate:undo:all": "sequelize-cli db:migrate:undo:all",
+    "seed": "sequelize-cli db:seed:all",
+    "seed:undo": "sequelize-cli db:seed:undo:all",
+    "db:setup": "npm run migrate && npm run seed",
+    "build": "npm run migrate"
   },
-  "keywords": [],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "survey",
+    "express",
+    "mysql",
+    "sequelize",
+    "ejs"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
@@ -27,10 +40,10 @@
     "joi": "^18.2.3",
     "method-override": "^3.0.0",
     "mysql2": "^3.23.2",
-    "sequelize": "^6.37.8"
+    "sequelize": "^6.37.8",
+    "sequelize-cli": "^6.6.5"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14",
-    "sequelize-cli": "^6.6.5"
+    "nodemon": "^3.1.14"
   }
 }

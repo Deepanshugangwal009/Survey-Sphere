@@ -91,21 +91,7 @@
   </div>
 <% }); %>
 
-<% if (results.totalTextPages > 1) { %>
-  <nav>
-    <ul class="pagination">
-      <li class="page-item <%= page <= 1 ? 'disabled' : '' %>">
-        <a class="page-link" href="/surveys/<%= survey.id %>/results?page=<%= page - 1 %>">Previous</a>
-      </li>
-      <li class="page-item disabled">
-        <span class="page-link">Page <%= page %> of <%= results.totalTextPages %></span>
-      </li>
-      <li class="page-item <%= page >= results.totalTextPages ? 'disabled' : '' %>">
-        <a class="page-link" href="/surveys/<%= survey.id %>/results?page=<%= page + 1 %>">Next</a>
-      </li>
-    </ul>
-  </nav>
-<% } %>
+<%- include('../partials/pagination', { page, totalPages: results.totalTextPages, baseUrl: `/surveys/${survey.id}/results` }) %>
 
 <script id="chartData" type="application/json"><%- chartDataJson %></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>

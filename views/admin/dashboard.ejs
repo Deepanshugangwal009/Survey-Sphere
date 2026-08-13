@@ -1,0 +1,52 @@
+<h3 class="mb-4">Admin Dashboard</h3>
+
+<div class="row mb-4">
+  <div class="col-md-4 mb-3">
+    <div class="card text-center h-100">
+      <div class="card-body">
+        <i class="fa-solid fa-users fa-2x text-primary mb-2"></i>
+        <h6 class="text-muted">Users</h6>
+        <h2 class="mb-0"><%= totalUsers %></h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card text-center h-100">
+      <div class="card-body">
+        <i class="fa-solid fa-square-poll-vertical fa-2x text-primary mb-2"></i>
+        <h6 class="text-muted">Surveys</h6>
+        <h2 class="mb-0"><%= totalSurveys %></h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card text-center h-100">
+      <div class="card-body">
+        <i class="fa-solid fa-inbox fa-2x text-primary mb-2"></i>
+        <h6 class="text-muted">Responses</h6>
+        <h2 class="mb-0"><%= totalResponses %></h2>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6 mb-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Users</h5>
+        <p class="card-text">Review every registered account and remove abusive users.</p>
+        <a class="btn btn-primary" href="/admin/users">Manage Users</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 mb-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Surveys</h5>
+        <p class="card-text">Review every survey on the system and remove unwanted ones.</p>
+        <a class="btn btn-primary" href="/admin/surveys">Manage Surveys</a>
+      </div>
+    </div>
+  </div>
+</div>

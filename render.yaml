@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: survey-sphere
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run migrate
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DB_SSL
+        value: "true"
+      - key: DB_SSL_REJECT_UNAUTHORIZED
+        value: "false"
+      - key: DB_POOL_MAX
+        value: "3"
+      - key: DATABASE_URL
+        sync: false

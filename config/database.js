@@ -9,9 +9,10 @@ const sequelize = new Sequelize(databaseSettings.database, databaseSettings.user
   host: databaseSettings.host,
   port: databaseSettings.port,
   dialect: databaseSettings.dialect,
+  dialectOptions: databaseSettings.dialectOptions,
   logging: databaseSettings.logging,
   pool: {
-    max: 5,
+    max: Number(process.env.DB_POOL_MAX) || 5,
     min: 0,
     acquire: 30000,
     idle: 10000
@@ -48,4 +49,4 @@ async function connectDatabase() {
   }
 }
 
-module.exports = { sequelize, connectDatabase, databaseSettings };
+module.exports = { sequelize, connectDatabase, databaseSettings, sslOption: config.sslOption };
